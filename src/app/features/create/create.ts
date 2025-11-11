@@ -4,6 +4,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { Products } from '../../shared/services/products';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create',
@@ -13,6 +15,8 @@ import { Products } from '../../shared/services/products';
 })
 export class Create {
   ProductsService = inject(Products);
+  matSnackBar = inject(MatSnackBar);
+  router = inject(Router);
 
   form = new FormGroup({
     title: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
@@ -21,9 +25,10 @@ export class Create {
   onSubmit() {
     this.ProductsService.post({
       title: this.form.controls.title.value,
-    })
-    .subscribe(() => {
-      alert('sucesso!');
+    }).subscribe(() => {
+      this.matSnackBar.open('Produto criado com sucesso!', 'Ok');
+
+      this.router.navigateByUrl('/');
     });
   }
 }

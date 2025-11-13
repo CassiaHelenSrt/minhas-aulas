@@ -9,11 +9,21 @@ import { ProductPayload } from '../interfaces/payload-product.interface';
 export class Products {
   httpClient = inject(HttpClient);
 
+  private api = 'http://localhost:3000/products';
+
   getAll() {
-    return this.httpClient.get<Product[]>('http://localhost:3000/products');
+    return this.httpClient.get<Product[]>(`${this.api}`);
   }
 
-  post(payload: ProductPayload) {
-    return this.httpClient.post('http://localhost:3000/products', payload);
+  get(id: string) {
+    return this.httpClient.get(`${this.api}/${id}`);
+  }
+
+  post(payload: any) {
+    return this.httpClient.post(`${this.api}`, payload);
+  }
+
+  put(id: string, payload: any) {
+    return this.httpClient.put(`${this.api}/${id}`, payload);
   }
 }

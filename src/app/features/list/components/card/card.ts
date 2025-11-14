@@ -13,6 +13,11 @@ export class Card {
   product = input.required<Product>();
 
   @Output() edit = new EventEmitter();
+  @Output() delete = new EventEmitter();
 
   productTitle = computed(() => this.product().title);
+
+  onDelete() {
+    this.delete.emit();
+  }
 }

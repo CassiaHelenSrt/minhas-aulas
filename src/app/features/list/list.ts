@@ -6,7 +6,21 @@ import { MatAnchor, MatButton, MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card';
 import { Card } from './components/card/card';
 import { Router, RouterLink } from '@angular/router';
-import { log } from 'console';
+
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { after } from 'node:test';
+
+@Component({
+  selector: 'app-confirmation-dialog',
+  template: `<h2 mat-dialog-title>Você tem certeza de que deseja excluir?</h2>
+    <mat-dialog-actions>
+      <button matButton mat-dialog-close>Cancel</button>
+      <button matButton>Delete</button>
+    </mat-dialog-actions>`,
+  standalone: true,
+  imports: [MatButtonModule, MatDialogModule],
+})
+export class ConfimationDialogComponent {}
 
 @Component({
   selector: 'app-list',
@@ -22,6 +36,8 @@ export class List {
 
   router = inject(Router);
 
+  matDialog = inject(MatDialog);
+
   constructor(public productsService: Products, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
@@ -34,5 +50,14 @@ export class List {
 
   onEdit(productId: string) {
     this.router.navigate(['/edit-product', productId]);
+  }
+
+  onDelete(product: Product) {
+    this.matDialog
+      .open(ConfimationDialogComponent)
+      .afterClosed()
+      .subscribe((data) => {
+        console.log('afterClosed', data);
+      });
   }
 }

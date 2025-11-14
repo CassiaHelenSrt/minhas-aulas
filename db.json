@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "title": "sapato",
+      "title": "sapato editado",
       "id": "5642"
     },
     {
@@ -19,6 +19,14 @@
     {
       "id": "b133",
       "title": "ss"
+    },
+    {
+      "id": "24dc",
+      "title": "criando produto"
+    },
+    {
+      "id": "5bd9",
+      "title": "Criando novo Produto"
     }
   ]
 }

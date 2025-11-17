@@ -10,27 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { after } from 'node:test';
 import { filter } from 'rxjs';
-
-@Component({
-  selector: 'app-confirmation-dialog',
-  template: `<h2 mat-dialog-title>Você tem certeza de que deseja excluir?</h2>
-    <mat-dialog-actions>
-      <button matButton (click)="onNo()">Não</button>
-      <button matButton (click)="onYes()">Sim</button>
-    </mat-dialog-actions>`,
-  standalone: true,
-  imports: [MatButtonModule, MatDialogModule],
-})
-export class ConfimationDialogComponent {
-  matDialogRef = inject(MatDialogRef);
-
-  onNo() {
-    this.matDialogRef.close(false);
-  }
-  onYes() {
-    this.matDialogRef.close(true);
-  }
-}
+import { ConfirmationDialog } from '../../shared/services/confirmation-dialog';
 
 @Component({
   selector: 'app-list',
@@ -48,6 +28,8 @@ export class List {
 
   matDialog = inject(MatDialog);
 
+  ConfirmationDialogService = inject(ConfirmationDialog);
+
   constructor(public productsService: Products, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
@@ -63,10 +45,8 @@ export class List {
   }
 
   onDelete(product: Product) {
-    this.matDialog
-      .open(ConfimationDialogComponent)
-      .afterClosed()
-      .pipe(filter((answer) => answer === true)) //se o delete for true
+    this.ConfirmationDialogService.openDialog()
+      .pipe(filter((answer) => answer === true))
       .subscribe(() => {
         this.productsService.delete(product.id).subscribe(() => {
           this.productsService.getAll().subscribe((products) => {
@@ -75,10 +55,6 @@ export class List {
             this.cdr.detectChanges(); // força o Angular a atualizar a view corretamente
           });
         });
-        //se o delete for true
-        // if (answer) {
-        //   this.productsService.delete(product.id).subscribe(() => {});
-        // }
       });
   }
 }

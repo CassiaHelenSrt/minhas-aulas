@@ -1,14 +1,13 @@
-import { ChangeDetectorRef, Component, inject, Output, output } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { Products } from '../../shared/services/products';
 import { Product } from '../../shared/interfaces/product.interface';
-import { MatAnchor, MatButton, MatButtonModule } from '@angular/material/button';
+import { MatAnchor, MatButtonModule } from '@angular/material/button';
 
 import { MatCardModule } from '@angular/material/card';
 import { Card } from './components/card/card';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { after } from 'node:test';
+import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs';
 import { ConfirmationDialog } from '../../shared/services/confirmation-dialog';
 
@@ -20,7 +19,7 @@ import { ConfirmationDialog } from '../../shared/services/confirmation-dialog';
   styleUrl: './list.scss',
 })
 export class List {
-  products: Product[] = [];
+  products = signal<Product[]>(inject(ActivatedRoute).snapshot.data['products']);
 
   // productsService = inject(Products);
 
@@ -32,13 +31,12 @@ export class List {
 
   constructor(public productsService: Products, private cdr: ChangeDetectorRef) {}
 
-  ngOnInit() {
-    this.productsService.getAll().subscribe((products) => {
-      this.products = products;
-
-      this.cdr.detectChanges(); // força o Angular a atualizar a view corretamente
-    });
-  }
+  // ngOnInit() {
+  //   this.productsService.getAll().subscribe((products) => {
+  //     this.products = products;
+  //     this.cdr.detectChanges(); // força o Angular a atualizar a view corretamente
+  //   });
+  // }
 
   onEdit(productId: string) {
     this.router.navigate(['/edit-product', productId]);
@@ -50,9 +48,7 @@ export class List {
       .subscribe(() => {
         this.productsService.delete(product.id).subscribe(() => {
           this.productsService.getAll().subscribe((products) => {
-            this.products = products;
-
-            this.cdr.detectChanges(); // força o Angular a atualizar a view corretamente
+            this.products.set(products);
           });
         });
       });

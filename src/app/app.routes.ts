@@ -1,17 +1,14 @@
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { List } from './features/list/list';
-import { inject } from '@angular/core';
-import { Products } from './shared/services/products';
+
+import { getProducts } from './shared/resolvers/get-products.resolver';
+import { getProduct } from './shared/resolvers/get-product.resolver';
 
 export const routes: Routes = [
   {
     path: '',
     resolve: {
-      products: () => {
-        const productsService = inject(Products);
-
-        return productsService.getAll();
-      },
+      products: getProducts,
     },
     component: List,
   },
@@ -29,12 +26,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/edit/edit').then((m) => m.Edit),
 
     resolve: {
-      product: (route: ActivatedRouteSnapshot) => {
-        const productsService = inject(Products);
-        const id = route.paramMap.get('id'); // ✅ pega o id da URL
-        console.log('ID capturado:', id); // 👉 pode deixar pra testar
-        return productsService.get(id!);
-      },
+      product: getProduct,
     },
   },
 ];

@@ -7,20 +7,30 @@ import { MatCardModule } from '@angular/material/card';
 import { Card } from './components/card/card';
 import { Router, RouterLink } from '@angular/router';
 
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { after } from 'node:test';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-confirmation-dialog',
   template: `<h2 mat-dialog-title>Você tem certeza de que deseja excluir?</h2>
     <mat-dialog-actions>
-      <button matButton mat-dialog-close>Cancel</button>
-      <button matButton>Delete</button>
+      <button matButton (click)="onNo()">Não</button>
+      <button matButton (click)="onYes()">Sim</button>
     </mat-dialog-actions>`,
   standalone: true,
   imports: [MatButtonModule, MatDialogModule],
 })
-export class ConfimationDialogComponent {}
+export class ConfimationDialogComponent {
+  matDialogRef = inject(MatDialogRef);
+
+  onNo() {
+    this.matDialogRef.close(false);
+  }
+  onYes() {
+    this.matDialogRef.close(true);
+  }
+}
 
 @Component({
   selector: 'app-list',
@@ -56,8 +66,19 @@ export class List {
     this.matDialog
       .open(ConfimationDialogComponent)
       .afterClosed()
-      .subscribe((data) => {
-        console.log('afterClosed', data);
+      .pipe(filter((answer) => answer === true)) //se o delete for true
+      .subscribe(() => {
+        this.productsService.delete(product.id).subscribe(() => {
+          this.productsService.getAll().subscribe((products) => {
+            this.products = products;
+
+            this.cdr.detectChanges(); // força o Angular a atualizar a view corretamente
+          });
+        });
+        //se o delete for true
+        // if (answer) {
+        //   this.productsService.delete(product.id).subscribe(() => {});
+        // }
       });
   }
 }
